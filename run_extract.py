@@ -1,4 +1,4 @@
-from extraction.extract_text import extract_pdf_text
+from extraction.extract_text import clean_text, extract_pdf_text
 
 
 def extract_doc_details(path: str) -> dict:
@@ -7,12 +7,11 @@ def extract_doc_details(path: str) -> dict:
 
     # extract text from document
     extracted_text = extract_pdf_text(path)
-    details["text"] = extracted_text
+    details["text"] = clean_text(extracted_text)
 
     # process text using embedings
     # extract talent details using LLM
     # classifying talent details
 
     # return talent details in json
-    print(f"details: {details}")
     return details

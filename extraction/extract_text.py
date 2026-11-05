@@ -1,4 +1,5 @@
 import pymupdf
+import re
 
 
 def extract_pdf_text(path: str) -> str:
@@ -19,3 +20,19 @@ def extract_pdf_text(path: str) -> str:
 
     doc.close()
     return "\n".join(extracted_pages)
+
+
+def clean_text(text: str) -> str:
+    # normalize line endings
+    text = text.replace("\r\n", "\n")
+
+    # remove excessive whitespace
+    text = re.sub(r"[ \t]+", " ", text)
+
+    # remove excessive blank lines
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    # remove common PDF artifacts
+    text = text.replace("\x00", "")
+
+    return text.strip()
