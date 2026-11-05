@@ -1,5 +1,9 @@
+from run_extract import extract_doc_details
+
+
 def main():
-    print("vora extraction model")
+    path = "samples/CvResume-1.pdf"
+    print(extract_doc_details(path))
 
 
 if __name__ == "__main__":
