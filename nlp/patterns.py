@@ -1,1 +1,17 @@
-CV_PATTERNS = []
+CV_PATTERNS = [
+    {"label": "EXAMINATION", "pattern": "IELTS"},
+    {"label": "EXAMINATION", "pattern": "OET"},
+    {"label": "EXAMINATION", "pattern": "USMLE"},
+    {"label": "EXAMINATION", "pattern": "PLAB"},
+    {"label": "PROFESSION", "pattern": "Registered Nurse"},
+    {"label": "PROFESSION", "pattern": "Nurse Practitioner"},
+    {"label": "PROFESSION", "pattern": "Registered Midwife"},
+    {"label": "PROFESSION", "pattern": "Clinical Pharmacist"},
+    {"label": "PROFESSION", "pattern": "Hospital Pharmacist"},
+    {"label": "PROFESSION", "pattern": "Community Pharmacist"},
+    {"label": "PROFESSION", "pattern": "Medical Laboratory Scientist"},
+    {"label": "PROFESSION", "pattern": "Biomedical Scientist"},
+    {"label": "PROFESSION", "pattern": "Medical Officer"},
+    {"label": "PROFESSION", "pattern": "General Practitioner"},
+    {"label": "PROFESSION", "pattern": "Consultant Physician"},
+]

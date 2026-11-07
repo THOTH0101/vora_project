@@ -1,5 +1,8 @@
-from presidio_analyzer import AnalyzerEngine, Pattern, PatternRecognizer
-
+from presidio_analyzer import (
+    AnalyzerEngine,
+    Pattern,
+    PatternRecognizer,
+)
 from presidio_analyzer.nlp_engine import SpacyNlpEngine
 from presidio_anonymizer import AnonymizerEngine
 
@@ -45,3 +48,44 @@ def create_presidio():
 
 # Initialize once per worker process.
 analyzer, anonymizer = create_presidio()
+
+
+def protect_cv_text(text: str):
+
+    sensitive_entities = [
+        "PERSON",
+        "EMAIL_ADDRESS",
+        "PHONE_NUMBER",
+        "NIGERIAN_PHONE_NUMBER",
+    ]
+
+    findings = analyzer.analyze(text=text, language="en", entities=sensitive_entities)
+
+    # Preserve detected information separately.
+    extracted_pii = []
+
+    for result in findings:
+        extracted_pii.append(
+            {
+                "type": result.entity_type,
+                "value": text[result.start : result.end],
+                "start": result.start,
+                "end": result.end,
+                "score": result.score,
+            }
+        )
+
+    # Redact sensitive information before sending text
+    # to an external LLM provider.
+    anonymized = anonymizer.anonymize(
+        text=text,
+        analyzer_results=findings,
+        operators={
+            "PERSON": {"type": "replace", "new_value": "[PERSON]"},
+            "EMAIL_ADDRESS": {"type": "replace", "new_value": "[EMAIL]"},
+            "PHONE_NUMBER": {"type": "replace", "new_value": "[PHONE]"},
+            "NIGERIAN_PHONE_NUMBER": {"type": "replace", "new_value": "[PHONE]"},
+        },
+    )
+
+    return {"redacted_text": anonymized.text, "pii": extracted_pii}
