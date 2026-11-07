@@ -1,17 +1,18 @@
-from extraction.extract_text import clean_text, extract_pdf_text
+from extraction.extract_text import clean_text, combine_pages, extract_pdf_text
+from nlp.engine import extract_cv_entities
+from privacy.presidio import protect_cv_text
 
 
 def extract_doc_details(path: str) -> dict:
-    # function extract useful info from user document using embedings
-    details = {}
+    # 1. Extract PDF content
+    pages = extract_pdf_text(path)
+    raw_text = clean_text(combine_pages(pages))
 
-    # extract text from document
-    extracted_text = extract_pdf_text(path)
-    details["text"] = clean_text(extracted_text)
+    # 2. Run shared NLP model
+    entities = extract_cv_entities(raw_text)
 
-    # process text using embedings
-    # extract talent details using LLM
-    # classifying talent details
+    # 3. Detect and redact PII
+    privacy_result = protect_cv_text(raw_text)
 
-    # return talent details in json
-    return details
+    # 4. Extract structured CV information
+    return {"PII_result": privacy_result, "entities_extracted": entities}

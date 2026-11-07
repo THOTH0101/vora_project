@@ -19,7 +19,6 @@ class LoadedSpacyNlpEngine(SpacyNlpEngine):
 
 
 def create_presidio():
-
     shared_nlp = get_nlp()
 
     nlp_engine = LoadedSpacyNlpEngine(loaded_spacy_model=shared_nlp)
@@ -51,7 +50,7 @@ analyzer, anonymizer = create_presidio()
 
 
 def protect_cv_text(text: str):
-
+    """remove sentitive detail without removing relevant once"""
     sensitive_entities = [
         "PERSON",
         "EMAIL_ADDRESS",

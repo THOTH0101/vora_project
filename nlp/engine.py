@@ -23,7 +23,7 @@ def get_nlp():
 
 
 def extract_cv_entities(text: str):
-
+    """extract entities using extracted text"""
     doc = get_nlp()(text)
 
     entities = []
