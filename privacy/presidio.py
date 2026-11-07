@@ -5,6 +5,7 @@ from presidio_analyzer import (
 )
 from presidio_analyzer.nlp_engine import SpacyNlpEngine
 from presidio_anonymizer import AnonymizerEngine
+from presidio_anonymizer.entities import RecognizerResult, OperatorConfig
 
 from nlp.engine import get_nlp
 
@@ -78,12 +79,17 @@ def protect_cv_text(text: str):
     # to an external LLM provider.
     anonymized = anonymizer.anonymize(
         text=text,
-        analyzer_results=findings,
+        analyzer_results=[
+            RecognizerResult(
+                entity_type=f.entity_type, start=f.start, end=f.end, score=f.score
+            )
+            for f in findings
+        ],
         operators={
-            "PERSON": {"type": "replace", "new_value": "[PERSON]"},
-            "EMAIL_ADDRESS": {"type": "replace", "new_value": "[EMAIL]"},
-            "PHONE_NUMBER": {"type": "replace", "new_value": "[PHONE]"},
-            "NIGERIAN_PHONE_NUMBER": {"type": "replace", "new_value": "[PHONE]"},
+            "PERSON": OperatorConfig("replace"),
+            "EMAIL_ADDRESS": OperatorConfig("replace"),
+            "PHONE_NUMBER": OperatorConfig("replace"),
+            "NIGERIAN_PHONE_NUMBER": OperatorConfig("replace"),
         },
     )
 
