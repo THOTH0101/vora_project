@@ -1,14 +1,20 @@
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class Evidence(BaseModel):
-    quote: str
-    page: int | None = None
+class CandidateModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class Evidence(CandidateModel):
+    quote: str = Field(min_length=1, description="Exact quotation from the redacted CV.")
+    page: int | None = Field(
+        default=None, ge=1, description="Enclosing [PAGE N] marker, if supplied."
+    )
     confidence: float | None = Field(default=None, ge=0, le=1)
 
 
-class ProfessionalIdentity(BaseModel):
+class ProfessionalIdentity(CandidateModel):
     primary_group: Literal[
         "medical",
         "nursing",
@@ -26,14 +32,14 @@ class ProfessionalIdentity(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class CandidateLocation(BaseModel):
+class CandidateLocation(CandidateModel):
     nationality: str | None = None
     current_country_of_residence: str | None = None
     state_or_region: str | None = None
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class LicenseClaim(BaseModel):
+class LicenseClaim(CandidateModel):
     profession: str | None = None
     regulator: str | None = None
     licence_number: str | None = None
@@ -48,8 +54,8 @@ class LicenseClaim(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class LanguageRecord(BaseModel):
-    language: str
+class LanguageRecord(CandidateModel):
+    language: str = Field(min_length=1)
     proficiency: str | None = None
     proficiency_framework: str | None = None
     certificate: str | None = None
@@ -58,8 +64,8 @@ class LanguageRecord(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class ExaminationRecord(BaseModel):
-    name: str
+class ExaminationRecord(CandidateModel):
+    name: str = Field(min_length=1)
     category: Literal[
         "language",
         "medical_licensing",
@@ -78,8 +84,8 @@ class ExaminationRecord(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class EducationRecord(BaseModel):
-    qualification: str
+class EducationRecord(CandidateModel):
+    qualification: str = Field(min_length=1)
     education_level: str | None = None
     field_of_study: str | None = None
     institution: str | None = None
@@ -89,8 +95,8 @@ class EducationRecord(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class EmploymentRecord(BaseModel):
-    role: str
+class EmploymentRecord(CandidateModel):
+    role: str = Field(min_length=1)
     employer: str | None = None
 
     start_date: str | None = None
@@ -110,21 +116,21 @@ class EmploymentRecord(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class SpecialtyRecord(BaseModel):
-    name: str
+class SpecialtyRecord(CandidateModel):
+    name: str = Field(min_length=1)
     subspecialty: str | None = None
     qualification: str | None = None
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class SkillRecord(BaseModel):
-    name: str
+class SkillRecord(CandidateModel):
+    name: str = Field(min_length=1)
     category: str | None = None
     proficiency: str | None = None
     evidence: list[Evidence] = Field(default_factory=list)
 
 
-class ExperienceSummary(BaseModel):
+class ExperienceSummary(CandidateModel):
     total_months: int | None = None
     clinical_months: int | None = None
     administrative_months: int | None = None
@@ -134,8 +140,8 @@ class ExperienceSummary(BaseModel):
     specialty_months: dict[str, int] = Field(default_factory=dict)
 
 
-class CandidateProfile(BaseModel):
-    schema_version: str = "1.0"
+class CandidateProfile(CandidateModel):
+    schema_version: Literal["1.0"] = "1.0"
 
     identity: ProfessionalIdentity
     location: CandidateLocation

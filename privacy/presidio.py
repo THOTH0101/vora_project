@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from presidio_analyzer import (
     AnalyzerEngine,
     Pattern,
@@ -19,6 +21,7 @@ class LoadedSpacyNlpEngine(SpacyNlpEngine):
         self.nlp = {"en": loaded_spacy_model}
 
 
+@lru_cache(maxsize=1)
 def create_presidio():
     shared_nlp = get_nlp()
 
@@ -46,12 +49,9 @@ def create_presidio():
     return analyzer, anonymizer
 
 
-# Initialize once per worker process.
-analyzer, anonymizer = create_presidio()
-
-
 def protect_cv_text(text: str):
-    """remove sentitive detail without removing relevant once"""
+    """Redact names, email addresses, and phone numbers while preserving CV facts."""
+    analyzer, anonymizer = create_presidio()
     sensitive_entities = [
         "PERSON",
         "EMAIL_ADDRESS",
